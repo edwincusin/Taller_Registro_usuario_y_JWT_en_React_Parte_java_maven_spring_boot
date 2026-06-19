@@ -45,7 +45,7 @@ public class AuthController {
 		} catch (DataIntegrityViolationException e) {
 
 			return ResponseEntity.badRequest()
-					.body("Los datos enviados violan una restricción de la base de datos: " + e.getMessage());
+			        .body(Map.of("mensaje", "El nombre de usuario ya está registrado"));
 
 		} catch (Exception e) {
 
