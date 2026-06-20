@@ -32,7 +32,7 @@ public class VehiculoController {
 	}
 	
 	//
-	@PostMapping("/registro")
+	@PostMapping("/registrar")
 	public ResponseEntity<?> resgistrarVehiculo(
 			@RequestParam("file") MultipartFile file,
 			@RequestParam("marca") String marca,
@@ -47,7 +47,7 @@ public class VehiculoController {
 			
 			vehiculoRepository.save(vehiculo);
 			
-			return ResponseEntity.status(HttpStatus.CREATED).body("Vehiculo registrado correctamente");
+			return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("Mensaje","Vehiculo registrado correctamente"));
 			
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Mensaje","error al procesar el archivo => "+e.getMessage()));
