@@ -1,12 +1,15 @@
 package com.krakedev.taller_jwt.controller;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,7 +53,7 @@ public class VehiculoController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Mensaje","error al procesar el archivo => "+e.getMessage()));
 		}
 	}
-	
+	@GetMapping("/listar")
 	public ResponseEntity<?> listarVehiculos(){
 		List<Vehiculo> listaVehiculos=vehiculoRepository.findAll();
 		
@@ -59,6 +62,39 @@ public class VehiculoController {
 			vehiculo.setFoto(null);
 		}
 		return ResponseEntity.ok(listaVehiculos);
+	}
+	
+	// ═══════════════════════════════════════════
+	// ENDPOINT PARA OBTENER LA FOTO DE UN VEHÍCULO
+	// ═══════════════════════════════════════════
+	@GetMapping("/{id}/foto")
+	public ResponseEntity<byte[]> obtenerFoto(@PathVariable Integer id){
+
+	    // Busca el vehículo por su ID.
+	    // Si no existe, lanza una excepción.
+	    Vehiculo vehiculo = vehiculoRepository.findById(id)
+	            .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+
+	    // Obtiene el tipo MIME almacenado en la base de datos.
+	    // Ejemplos: image/jpeg, image/png
+	    String mimeType = vehiculo.getMimeType();
+
+	    // Crea los encabezados HTTP de la respuesta.
+	    HttpHeaders headers = new HttpHeaders();
+
+	    // Configura el Content-Type para que el navegador
+	    // sepa qué tipo de imagen está recibiendo.
+	    headers.setContentType(MediaType.parseMediaType(mimeType));
+
+	    // Devuelve:
+	    // 1. Los bytes de la imagen
+	    // 2. Los encabezados HTTP
+	    // 3. El estado 200 OK
+	    return new ResponseEntity<>(
+	            vehiculo.getFoto(),
+	            headers,
+	            HttpStatus.OK
+	    );
 	}
 	
 }
