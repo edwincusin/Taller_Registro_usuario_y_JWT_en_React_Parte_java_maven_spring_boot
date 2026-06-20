@@ -1,5 +1,7 @@
 package com.krakedev.taller_jwt.controller;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -47,6 +49,16 @@ public class VehiculoController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Mensaje","error al procesar el archivo => "+e.getMessage()));
 		}
+	}
+	
+	public ResponseEntity<?> listarVehiculos(){
+		List<Vehiculo> listaVehiculos=vehiculoRepository.findAll();
+		
+		//recorrer la lista para removr los bytes
+		for(Vehiculo vehiculo:listaVehiculos) {
+			vehiculo.setFoto(null);
+		}
+		return ResponseEntity.ok(listaVehiculos);
 	}
 	
 }
