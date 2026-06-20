@@ -24,7 +24,7 @@ public class Pelicula {
 	@Column(name = "sinopis", nullable = false)
 	private String sinopis;
 
-	@Column(name = "mime_Type")
+	@Column(name = "mime_type")
 	private String mimeType;
 
 	@Column(name = "foto", columnDefinition = "bytea")
