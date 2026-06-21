@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,46 +24,43 @@ import com.krakedev.taller_jwt.repository.PeliculaRepository;
 @RestController
 @RequestMapping("/auth/peliculas")
 public class PeliculaController {
-	
+
 	private final PeliculaRepository peliculaRepository;
 
 	public PeliculaController(PeliculaRepository peliculaRepository) {
 		super();
 		this.peliculaRepository = peliculaRepository;
 	}
-	
-	//METODO LISTAR
+
+	// METODO LISTAR
 	@GetMapping
-	public ResponseEntity<?> listar(){
-		List<Pelicula> peliculas=peliculaRepository.findAll();
+	public ResponseEntity<?> listar() {
+		List<Pelicula> peliculas = peliculaRepository.findAll();
 		return ResponseEntity.ok(peliculas);
 	}
-	
-	//METODO CREAR 
+
+	// METODO CREAR
 	@PostMapping
-	public ResponseEntity<?> crear(
-			@RequestParam("file") MultipartFile file,
-			@RequestParam("titulo") String titulo,
-			@RequestParam("genero") String genero,
-			@RequestParam("sinopsis") String sinopsis
-			){
+	public ResponseEntity<?> crear(@RequestParam("file") MultipartFile file, @RequestParam("titulo") String titulo,
+			@RequestParam("genero") String genero, @RequestParam("sinopsis") String sinopsis) {
 		try {
-			Pelicula peliculaNueva=new Pelicula();
+			Pelicula peliculaNueva = new Pelicula();
 			peliculaNueva.setTitulo(titulo);
 			peliculaNueva.setGenero(genero);
 			peliculaNueva.setSinopis(sinopsis);
 			peliculaNueva.setMimeType(file.getContentType());
 			peliculaNueva.setFoto(file.getBytes());
-			
+
 			peliculaRepository.save(peliculaNueva);
-			
-			return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("Mensaje","Registro existoso"));
+
+			return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("Mensaje", "Registro existoso"));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Mensaje","Error interno del sistema al crear pelicula"));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(Map.of("Mensaje", "Error interno del sistema al crear pelicula"));
 		}
 	}
-	
-	//METODO EDITAR PELICULA
+
+	// METODO EDITAR PELICULA
 	@PutMapping("/{id}")
 	public ResponseEntity<?> editar(
 			@PathVariable("id") Integer id,
@@ -99,7 +97,27 @@ public class PeliculaController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Mensaje","Error al realizar la edicion"));
 		}
 	}
-	
+
+	// METODO ELIMINAR PELICULA
+	@DeleteMapping("/{id}")
+		public ResponseEntity<?> eliminar(@PathVariable("id") Integer id	){
+			
+			try {
+				boolean existePelicula=peliculaRepository.existsById(id);
+				
+				if (existePelicula) {
+										
+					peliculaRepository.deleteById(id);
+					return ResponseEntity.status(HttpStatus.OK).body(Map.of("Mensaje","Se elimino con exito de la BDD"));
+					
+				}else {
+					return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Mensjae","Pelicula no encontrada en la BDD"));
+				}
+				
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Mensaje","Error al eliminar."));
+			}
+		}
 	
 	
 }
