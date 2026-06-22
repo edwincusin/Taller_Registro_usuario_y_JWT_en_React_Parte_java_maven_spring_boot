@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -119,5 +121,29 @@ public class PeliculaController {
 			}
 		}
 	
-	
+	// ═══════════════════════════════════════════
+	// ENDPOINT PARA OBTENER LA FOTO DE UNA PELICULA
+	// ═══════════════════════════════════════════
+	@GetMapping("/{id}/foto")
+	public ResponseEntity<byte[]> obtenerFoto(@PathVariable Integer id){
+
+	    // Busca la pelicula por su ID.
+	    // Si no existe, lanza una excepción.
+	    Pelicula pelicula = peliculaRepository.findById(id)
+	            .orElseThrow(() -> new RuntimeException("Pelicula no encontrada"));
+
+	    // Obtiene el tipo MIME almacenado en la base de datos.
+	    String mimeType = pelicula.getMimeType();
+
+	    // Crea los encabezados HTTP de la respuesta.
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.parseMediaType(mimeType));
+
+	    // Devuelve los bytes de la imagen + headers + 200 OK
+	    return new ResponseEntity<>(
+	            pelicula.getFoto(),
+	            headers,
+	            HttpStatus.OK
+	    );
+	}
 }

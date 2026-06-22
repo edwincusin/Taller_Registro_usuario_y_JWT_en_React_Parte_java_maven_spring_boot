@@ -21,7 +21,7 @@ public class Pelicula {
 	@Column(name = "genero", nullable = false)
 	private String genero;
 
-	@Column(name = "sinopis", nullable = false)
+	@Column(name = "sinopis", nullable = false, columnDefinition = "text")
 	private String sinopis;
 
 	@Column(name = "mime_type")
